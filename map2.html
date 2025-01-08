@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 100%;
+            color: #3d3d3d;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map2 {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+        }
+
+        #toggle {
+            position: absolute;
+            top: 12px;
+            right: 55px;
+            padding: 5px;
+            background: rgba(255, 255, 255, 1);
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            z-index: 800;
+            cursor: pointer;
+        }
+
+        #toggle:hover {
+            background: rgb(255, 226, 2);
+        }
+
+        #about {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            width: 280px;
+            background: rgba(256, 256, 256, .3);
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            z-index: 800;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map2"></div>
+    <button id="toggle">Hide</button>
+    <section id="about">
+        <h2>My Route</h2>
+        <p>This is the route I took moving between my undergraduate to my graduate home! Click the map for details.</p>
+    </section>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="data/route.js"></script>
+    <script>
+        const options = {
+            center: [38.038685, -84.504164],
+            zoom: 12,
+        };
+
+        const map = L.map('map2', options);
+
+        // Add tile layer
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors, CartoDB',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Add route data
+        const myRoute = L.geoJson(routeData, {
+            style: {
+                color: "#005DAA",
+                weight: 4,
+                dashArray: "5, 5"
+            }
+        }).addTo(map);
+
+        // Highlight route on mouseover
+        myRoute.on("mouseover", function () {
+            myRoute.setStyle({
+                color: "red",
+                weight: 6,
+                opacity: 0.8
+            });
+        });
+
+        myRoute.on("mouseout", function () {
+            myRoute.setStyle({
+                color: "#005DAA",
+                weight: 4,
+                dashArray: "5, 5"
+            });
+        });
+
+        // Add stops with popups and zoom behavior
+        const myStops = L.geoJson(routeData, {
+            filter: feature => feature.geometry.type === "Point",
+            onEachFeature: (feature, layer) => {
+                layer.bindPopup(feature.properties.name);
+                layer.on("click", function () {
+                    map.setView(layer.getLatLng(), 15);
+                    layer.openPopup();
+                });
+            }
+        }).addTo(map);
+
+        // Add "Hide" button functionality
+        const toggleButton = document.querySelector('#toggle');
+        const aboutSection = document.querySelector('#about');
+        toggleButton.addEventListener('click', () => {
+            aboutSection.classList.toggle('hide');
+            toggleButton.innerHTML = toggleButton.innerHTML === 'Hide' ? 'Show' : 'Hide';
+        });
+
+        // Adjust map bounds
+        map.fitBounds(myRoute.getBounds(), {
+            padding: [50, 50]
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Denver Home Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #2b2b2b;
+            color: #acacac;
+        }
+
+        #map3 {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+            margin: 20px auto;
+        }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            line-height: 1.5;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .legend span {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            border: 1px solid #000;
+        }
+
+        .legend .fire {
+            background: #ff4500;
+        }
+
+        .legend .food {
+            background: #006400;
+        }
+
+        .legend .school {
+            background: #FFD700;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map3"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="data/denver-fire-stations.js"></script>
+    <script src="data/denver-food-stores.js"></script>
+    <script src="data/after-school-programs.js"></script>
+    <script>
+        // Initialize the map
+        const map = L.map('map3', {
+            center: [39.7256, -104.9252],
+            zoom: 12,
+            minZoom: 12,
+            maxZoom: 19
+        });
+
+        // Add the tile layer
+        L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/dark_all/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Marker styles
+        const markerStyles = {
+            fireStations: {
+                radius: 6,
+                color: '#ff4500',
+                fillColor: '#ff4500',
+                fillOpacity: 0.6
+            },
+            foodStores: {
+                radius: 8,
+                color: '#006400',
+                fillColor: '#006400',
+                fillOpacity: 0.8
+            },
+            afterSchoolPrograms: {
+                radius: 10,
+                color: '#FFD700',
+                fillColor: '#FFD700',
+                fillOpacity: 0.8
+            }
+        };
+
+        // Create GeoJSON layers
+        const fireStationsLayer = L.geoJson(stations, {
+            pointToLayer: (feature, latlng) => L.circleMarker(latlng, markerStyles.fireStations),
+            onEachFeature: (feature, layer) => {
+                layer.bindTooltip(`Station Number: ${feature.properties.STATION_NU}`);
+            }
+        }).addTo(map);
+
+        const foodStoresLayer = L.geoJson(stores, {
+            pointToLayer: (feature, latlng) => L.circleMarker(latlng, markerStyles.foodStores),
+            onEachFeature: (feature, layer) => {
+                layer.bindTooltip(`Store Name: ${feature.properties.STORE_NAME}`);
+            }
+        }).addTo(map);
+
+        const afterSchoolProgramsLayer = L.geoJson(programs, {
+            pointToLayer: (feature, latlng) => L.circleMarker(latlng, markerStyles.afterSchoolPrograms),
+            onEachFeature: (feature, layer) => {
+                layer.bindTooltip(`Organization: ${feature.properties.ORGANIZATI}`);
+            }
+        }).addTo(map);
+
+        // Add a legend
+        const legend = L.control({ position: 'bottomright' });
+        legend.onAdd = function () {
+            const div = L.DomUtil.create('div', 'legend');
+            div.innerHTML = `
+                <div><span class="fire"></span> Fire Stations</div>
+                <div><span class="food"></span> Food Stores</div>
+                <div><span class="school"></span> After School Programs</div>
+            `;
+            return div;
+        };
+        legend.addTo(map);
+
+        // Click event for highlighting points within 1km
+        let currentCircle = null;
+        map.on('click', function (e) {
+            const clickLocation = e.latlng;
+
+            if (currentCircle) {
+                map.removeLayer(currentCircle);
+            }
+
+            currentCircle = L.circle(clickLocation, {
+                radius: 1000,
+                color: 'black',
+                weight: 1,
+                fillColor: 'white',
+                fillOpacity: 0.3
+            }).addTo(map);
+
+            function highlightNearby(layer, style) {
+                layer.eachLayer(marker => {
+                    const distance = clickLocation.distanceTo(marker.getLatLng());
+                    marker.setStyle({
+                        ...style,
+                        fillOpacity: distance <= 1000 ? 1 : 0.1
+                    });
+                });
+            }
+
+            highlightNearby(fireStationsLayer, markerStyles.fireStations);
+            highlightNearby(foodStoresLayer, markerStyles.foodStores);
+            highlightNearby(afterSchoolProgramsLayer, markerStyles.afterSchoolPrograms);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Mapping Portfolio</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        #tabs {
+            display: flex;
+            justify-content: center;
+            background: #444;
+        }
+
+        #tabs button {
+            flex: 1;
+            padding: 10px;
+            cursor: pointer;
+            background: #444;
+            border: none;
+            color: #fff;
+            font-size: 1em;
+            outline: none;
+        }
+
+        #tabs button.active {
+            background: #fff;
+            color: #444;
+            font-weight: bold;
+        }
+
+        .iframe-container {
+            display: none;
+            height: 600px;
+            width: 100%;
+            border: none;
+        }
+
+        .iframe-container.active {
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.153);
+            font-family: 'Arial', sans-serif;
+        }
+
+        #profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid #555;
+            object-fit: cover;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #profile-pic:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8),
+                0 0 15px rgba(255, 255, 255, 0.6),
+                0 0 25px rgba(255, 255, 255, 0.4);
+        }
+
+        .caption {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #f4f0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Web Mapping Portfolio</h1>
+        <p>Explore my interactive mapping projects</p>
+    </header>
+
+    <div id="tabs">
+        <button class="tab-button active" data-target="map1">US Power Plants</button>
+        <button class="tab-button" data-target="map2">Route Map</button>
+        <button class="tab-button" data-target="map3">Denver Home Map</button>
+        <button class="tab-button" data-target="map4">Rollercoasters</button>
+    </div>
+
+    <!-- iFrame Containers -->
+    <iframe id="map1" class="iframe-container active" src="map1.html"></iframe>
+    <iframe id="map2" class="iframe-container" src="map2.html"></iframe>
+    <iframe id="map3" class="iframe-container" src="map3.html"></iframe>
+    <iframe id="map4" class="iframe-container" src="map4.html"></iframe>
+
+    <footer>
+        <p>Map authored by Sable Augustyn</p>
+        <hr>
+        <a href="https://geography.as.uky.edu/users/sjau227" target="_blank">
+            <img id="profile-pic"
+                src="https://geography.as.uky.edu/sites/default/files/styles/large/public/pictures/Screenshot%202023-08-28%20170010.png?itok=5DtkD-Ix"
+                alt="Sable Augustyn">
+        </a>
+        <div>
+            <strong>Visit My Website</strong>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching logic
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                button.classList.add('active');
+
+                // Hide all iframes
+                document.querySelectorAll('.iframe-container').forEach(iframe => iframe.classList
+                    .remove('active'));
+                // Show the corresponding iframe
+                const target = button.getAttribute('data-target');
+                document.getElementById(target).classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

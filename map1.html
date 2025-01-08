@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US Power Plants</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map1 {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+            margin: auto;
+        }
+
+        .legend-item {
+            font-family: Arial, sans-serif;
+            font-size: 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map1"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="data/power-plants.js"></script>
+    <script>
+        function initializeMap1() {
+            const map = L.map('map1', {
+                center: [40.0558, -98.8183],
+                zoom: 5
+            });
+
+            // Add tile layer
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors, CartoDB',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Function to calculate circle radius
+            function getRadius(val) {
+                const radius = Math.sqrt(val / Math.PI);
+                return radius * 0.766;
+            }
+
+            // Define fuel source layers
+            const layerInfo = {
+                hydroLayer: {
+                    source: "Hydro",
+                    color: '#1f78b4'
+                },
+                windLayer: {
+                    source: "Wind",
+                    color: '#33a02c'
+                },
+                solarLayer: {
+                    source: "Solar",
+                    color: '#ffff00'
+                },
+                coalLayer: {
+                    source: "Coal",
+                    color: '#6a3d9a'
+                }
+            };
+
+            const geoJsonLayers = {};
+
+            // Create GeoJSON layers dynamically
+            for (let layer in layerInfo) {
+                geoJsonLayers[layer] = L.geoJson(plants, {
+                    pointToLayer: (feature, latlng) => L.circleMarker(latlng, {
+                        weight: 1,
+                        color: 'black',
+                        fillColor: layerInfo[layer].color,
+                        fillOpacity: 0.8,
+                        radius: getRadius(feature.properties.fuel_source[layerInfo[layer].source])
+                    }),
+                    filter: feature => feature.properties.fuel_source[layerInfo[layer].source]
+                }).addTo(map);
+            }
+
+            // Add legend
+            const sourcesLayers = {
+                "<b class='legend-item' style='color:#1f78b4;'>Hydro</b>": geoJsonLayers.hydroLayer,
+                "<b class='legend-item' style='color:#33a02c;'>Wind</b>": geoJsonLayers.windLayer,
+                "<b class='legend-item' style='color:#ffff00;'>Solar</b>": geoJsonLayers.solarLayer,
+                "<b class='legend-item' style='color:#6a3d9a;'>Coal</b>": geoJsonLayers.coalLayer
+            };
+
+            L.control.layers(null, sourcesLayers, {
+                collapsed: false
+            }).addTo(map);
+
+            // Map click event for 500 km radius filter
+            map.on('click', function (e) {
+                const totals = {};
+                let totalCapacity = 0;
+
+                // Reset all layers to hidden
+                for (let layer in geoJsonLayers) {
+                    geoJsonLayers[layer].eachLayer(marker => {
+                        marker.setStyle({
+                            stroke: false,
+                            fill: false
+                        });
+                    });
+                }
+
+                // Calculate totals and reveal plants within 500 km
+                for (let layer in geoJsonLayers) {
+                    geoJsonLayers[layer].eachLayer(marker => {
+                        const distance = e.latlng.distanceTo(marker.getLatLng()) /
+                        1000; // Convert to km
+                        if (distance <= 500) {
+                            marker.setStyle({
+                                stroke: true,
+                                fill: true
+                            });
+
+                            const props = marker.feature.properties;
+                            for (let type in props.fuel_source) {
+                                totals[type] = (totals[type] || 0) + props.fuel_source[type];
+                                totalCapacity += props.capacity_mw;
+                            }
+                        }
+                    });
+                }
+
+                // Create popup content
+                const content = `
+                <h3>Power Generated within 500km</h3>
+                <ul>
+                    ${Object.entries(totals).map(([type, value]) => `<li>${type}: ${value.toLocaleString()} MW</li>`).join('')}
+                </ul>
+                <p><b>Total Capacity:</b> <span style='color: yellow;'>${totalCapacity.toLocaleString()}</span> MW</p>
+                `;
+
+                // Display popup
+                L.popup()
+                    .setLatLng(e.latlng)
+                    .setContent(content)
+                    .openOn(map);
+            });
+
+            return map;
+        }
+
+        // Initialize map on load
+        initializeMap1();
+    </script>
+</body>
+
+</html>
