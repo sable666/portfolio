@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Route Map</title>
+    <title>Road Trip: Lexington to San Diego</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body {
@@ -42,11 +42,22 @@
             bottom: 20px;
             left: 15px;
             width: 280px;
-            background: rgba(256, 256, 256, .3);
-            border: 1px solid #ddd;
+            background: rgba(256, 256, 256, 0.9); /* Slightly more opaque */
+            border: 1px solid #888; /* Thin frame */
             border-radius: 5px;
             z-index: 800;
-            padding: 10px;
+            padding: 15px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3); /* Add subtle shadow for better appearance */
+        }
+
+        #about h2 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        #about p {
+            font-size: 0.9em;
+            line-height: 1.4;
         }
     </style>
 </head>
@@ -55,29 +66,36 @@
     <div id="map2"></div>
     <button id="toggle">Hide</button>
     <section id="about">
-        <h2>My Route</h2>
-        <p>This is the route I took moving between my undergraduate to my graduate home! Click the map for details.</p>
+        <h2>Just so happen to be making this <em>exact</em> trip?</h2>
+        <p>Well you're in luck! I recommend you make these stops!</p>
+        <p>This cross-country adventure combines breathtaking views, whimsical art installations, and a touch of humor. From the majestic sandstone goblins of Utah to the quirky car-stone arrangements of Nebraska, this trip has something for everyone—even if you're just here for the snacks and selfies.</p>
     </section>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="data/route.js"></script>
+    <script src="data/route2.js"></script> 
+
     <script>
-        const options = {
-            center: [38.038685, -84.504164],
-            zoom: 12,
-        };
+        // Initialize the map
+        const map = L.map('map2');
 
-        const map = L.map('map2', options);
-
-        // Add tile layer
+        // Add the base tile layer
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap contributors, CartoDB',
             subdomains: 'abcd',
-            maxZoom: 19
+            maxZoom: 5
         }).addTo(map);
 
+        // Define the descriptive popups
+        const popups = {
+            "Black's Beach, San Diego, CA": "San Diego, CA: A beautiful coastal city known for its beaches, vibrant downtown, and nearly perfect weather year-round. Enjoy attractions like Balboa Park, the San Diego Zoo, and more!",
+            "Goblin Valley State Park, Utah": "Goblin Valley, UT: Famous for its unique sandstone formations resembling goblins, this park offers an otherworldly experience of Utah's stunning desert beauty.",
+            "Guernsey State Park, Lake Side Drive, Guernsey, WY": "Guernsey State Park, WY: Known for its breathtaking landscapes, historic sites, and the serene Guernsey Reservoir, this park is a hidden gem in Wyoming.",
+            "Carhenge, County Road 59, Alliance, NE": "Car Henge, NE: A whimsical tribute to Stonehenge, this art installation features vintage cars arranged in a circle, embodying the spirit of ingenuity and humor.",
+            "Keeneland, Versailles Road, Lexington, KY": "Lexington, KY: Home to Keeneland Race Course, a historic thoroughbred racing venue, and the heart of Kentucky's equestrian heritage."
+        };
+
         // Add route data
-        const myRoute = L.geoJson(routeData, {
+        const myRoute = L.geoJson(routeData2, {
             style: {
                 color: "#005DAA",
                 weight: 4,
@@ -85,7 +103,26 @@
             }
         }).addTo(map);
 
-        // Highlight route on mouseover
+        // Adjust the map bounds to show the entire route
+        map.fitBounds(myRoute.getBounds(), {
+            padding: [50, 50]
+        });
+
+        // Add stops with dynamic popups
+        const myStops = L.geoJson(routeData2, {
+            filter: feature => feature.geometry.type === "Point",
+            onEachFeature: (feature, layer) => {
+                const name = feature.properties.name;
+                const popupContent = popups[name] || "No description available.";
+                layer.bindPopup(`<strong>${name}</strong><br>${popupContent}`);
+                layer.on("click", function () {
+                    map.setView(layer.getLatLng(), 15);
+                    layer.openPopup();
+                });
+            }
+        }).addTo(map);
+
+        // Highlight route on hover
         myRoute.on("mouseover", function () {
             myRoute.setStyle({
                 color: "red",
@@ -102,29 +139,12 @@
             });
         });
 
-        // Add stops with popups and zoom behavior
-        const myStops = L.geoJson(routeData, {
-            filter: feature => feature.geometry.type === "Point",
-            onEachFeature: (feature, layer) => {
-                layer.bindPopup(feature.properties.name);
-                layer.on("click", function () {
-                    map.setView(layer.getLatLng(), 15);
-                    layer.openPopup();
-                });
-            }
-        }).addTo(map);
-
-        // Add "Hide" button functionality
+        // Hide/show the about section
         const toggleButton = document.querySelector('#toggle');
         const aboutSection = document.querySelector('#about');
         toggleButton.addEventListener('click', () => {
             aboutSection.classList.toggle('hide');
             toggleButton.innerHTML = toggleButton.innerHTML === 'Hide' ? 'Show' : 'Hide';
-        });
-
-        // Adjust map bounds
-        map.fitBounds(myRoute.getBounds(), {
-            padding: [50, 50]
         });
     </script>
 </body>

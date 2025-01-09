@@ -11,37 +11,89 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #ffe4e1; /* Light pink background */
+            color: #333; /* Dark text for readability */
         }
 
         header {
-            background: #333;
-            color: #fff;
-            padding: 10px 20px;
+            background: #ff69b4; /* Hot pink */
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            border-bottom: 2px solid #ff1493; /* Deep pink */
+        }
+
+        #profile-pic-container {
+            display: flex;
+            align-items: center;
+        }
+
+        #profile-pic {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 2px solid #ff1493; /* Deep pink */
+            margin-right: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        #profile-pic:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255, 20, 147, 0.8),
+                0 0 20px rgba(255, 20, 147, 0.6),
+                0 0 30px rgba(255, 20, 147, 0.4);
+        }
+
+        #title-area {
             text-align: center;
+            flex-grow: 1;
+        }
+
+        #title-area h1 {
+            margin: 0;
+            font-size: 2em;
+            color: #fff; /* White text */
+        }
+
+        #title-area p {
+            margin: 5px 0;
+            font-size: 1.2em;
+            color: #ffe4e1; /* Light pink for contrast */
+        }
+
+        #intro-text {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.1em;
+            color: #ff1493; /* Deep pink text */
         }
 
         #tabs {
             display: flex;
             justify-content: center;
-            background: #444;
+            background: #ffb6c1; /* Light pink */
+            padding: 10px 0;
+            border-top: 2px solid #ff1493; /* Deep pink */
+            border-bottom: 2px solid #ff1493;
         }
 
         #tabs button {
             flex: 1;
             padding: 10px;
             cursor: pointer;
-            background: #444;
-            border: none;
-            color: #fff;
+            background: #ffb6c1; /* Light pink */
+            border: 1px solid #ff1493; /* Deep pink */
+            color: #333;
             font-size: 1em;
             outline: none;
+            margin: 0 5px;
         }
 
         #tabs button.active {
-            background: #fff;
-            color: #444;
-            font-weight: bold;
+            background: #ff1493; /* Deep pink */
+            color: #fff; /* White text */
         }
 
         .iframe-container {
@@ -49,6 +101,8 @@
             height: 600px;
             width: 100%;
             border: none;
+            margin: 20px 0;
+            border: 2px solid #ff1493; /* Deep pink */
         }
 
         .iframe-container.active {
@@ -56,47 +110,55 @@
         }
 
         footer {
+            background: #ff69b4; /* Hot pink */
             text-align: center;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.153);
-            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            border-top: 2px solid #ff1493; /* Deep pink */
         }
 
-        #profile-pic {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 3px solid #555;
-            object-fit: cover;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        #about-me {
+            margin: 40px auto;
+            padding: 20px;
+            max-width: 800px;
+            border: 2px solid #ff1493; /* Deep pink */
+            background: #fff; /* White background for readability */
+            color: #333; /* Dark text for readability */
         }
 
-        #profile-pic:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8),
-                0 0 15px rgba(255, 255, 255, 0.6),
-                0 0 25px rgba(255, 255, 255, 0.4);
+        a {
+            color: #ff1493; /* Deep pink */
+            text-decoration: none;
         }
 
-        .caption {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #f4f0f0;
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 
 <body>
     <header>
-        <h1>Web Mapping Portfolio</h1>
-        <p>Explore my interactive mapping projects</p>
+        <a id="profile-pic-container" href="https://geography.as.uky.edu/users/sjau227" target="_blank">
+            <img id="profile-pic"
+                src="https://geography.as.uky.edu/sites/default/files/styles/large/public/pictures/Screenshot%202023-08-28%20170010.png?itok=5DtkD-Ix"
+                alt="Sable Augustyn">
+        </a>
+        <div id="title-area">
+            <h1>Sable Augustyn</h1>
+            <p>Web Mapping Portfolio</p>
+        </div>
     </header>
+
+    <div id="intro-text">
+        <p>Welcome! Explore the tabs below to view some of my interactive mapping projects, showcasing my skills in GIS
+            and web mapping.</p>
+    </div>
 
     <div id="tabs">
         <button class="tab-button active" data-target="map1">US Power Plants</button>
-        <button class="tab-button" data-target="map2">Route Map</button>
-        <button class="tab-button" data-target="map3">Denver Home Map</button>
-        <button class="tab-button" data-target="map4">Rollercoasters</button>
+        <button class="tab-button" data-target="map2">Road Trip</button>
+        <button class="tab-button" data-target="map3">Denver Service Glance</button>
+        <button class="tab-button" data-target="map4">King's Island Coasters</button>
     </div>
 
     <!-- iFrame Containers -->
@@ -105,17 +167,15 @@
     <iframe id="map3" class="iframe-container" src="map3.html"></iframe>
     <iframe id="map4" class="iframe-container" src="map4.html"></iframe>
 
+    <section id="about-me">
+        <h2>About Me</h2>
+        <p>A geographer and GIS analyst with a strong foundation in web mapping, geospatial analysis, and data
+            visualization...</p>
+    </section>
+
     <footer>
-        <p>Map authored by Sable Augustyn</p>
-        <hr>
-        <a href="https://geography.as.uky.edu/users/sjau227" target="_blank">
-            <img id="profile-pic"
-                src="https://geography.as.uky.edu/sites/default/files/styles/large/public/pictures/Screenshot%202023-08-28%20170010.png?itok=5DtkD-Ix"
-                alt="Sable Augustyn">
-        </a>
-        <div>
-            <strong>Visit My Website</strong>
-        </div>
+        <p>Created by Sable Augustyn</p>
+        <a href="resume.pdf" download>Download My Resume</a>
     </footer>
 
     <script>
@@ -128,8 +188,7 @@
                 button.classList.add('active');
 
                 // Hide all iframes
-                document.querySelectorAll('.iframe-container').forEach(iframe => iframe.classList
-                    .remove('active'));
+                document.querySelectorAll('.iframe-container').forEach(iframe => iframe.classList.remove('active'));
                 // Show the corresponding iframe
                 const target = button.getAttribute('data-target');
                 document.getElementById(target).classList.add('active');

@@ -21,115 +21,52 @@
             border: 1px solid #ccc;
             margin: 20px auto;
         }
-
-        .legend {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            line-height: 1.5;
-            font-size: 14px;
-            font-weight: bold;
-        }
     </style>
 </head>
 
 <body>
     <div id="map4"></div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="coasters.js"></script> <!-- Ensure coasters.js is loaded -->
+
     <script>
         // Initialize the map
         const map = L.map('map4', {
-            center: [39.341841, -84.266910],
-            zoom: 16
+            center: [39.341841, -84.266910], // Default map center
+            zoom: 6 // Default zoom level
         });
 
-        // Add the base layer
+        // Add the required tile layer
         L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             maxZoom: 17,
-            attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
-            opacity: 0.7
+            attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)'
         }).addTo(map);
 
-        // Array of rollercoaster hotspots
-        const hotspots = [
-            {
-                name: "Diamondback",
-                properties: {
-                    description: "High-speed hypercoaster that might get you wet!",
-                    openingDate: "April 2009",
-                    ranking: "#91st in the world",
-                    coordinates: [39.34208255155478, -84.26744681198555],
-                    icon: 'svgs/water-15.svg'
-                }
-            },
-            {
-                name: "Orion",
-                properties: {
-                    description: "A thrilling gigacoaster that takes you to the sky.",
-                    openingDate: "July 2020",
-                    ranking: "#76th in the world",
-                    coordinates: [39.34265224752977, -84.2626814941299],
-                    icon: 'svgs/rocket-11.svg'
-                }
-            },
-            {
-                name: "Mystic Timbers",
-                properties: {
-                    description: "A wooden coaster that will break your neck.",
-                    openingDate: "April 2017",
-                    phone: "1-800-you-gonna-die",
-                    ranking: "#54th in the world",
-                    coordinates: [39.341191877767116, -84.26877382511037],
-                    icon: 'svgs/danger-11.svg'
-                }
-            },
-            {
-                name: "The Beast",
-                properties: {
-                    description: "A classic wooden coaster that will make you scream.",
-                    openingDate: "April 1979",
-                    ranking: "The original #1 coaster in the world",
-                    coordinates: [39.344000, -84.270000],
-                    icon: 'svgs/danger-11.svg'
-                }
+        // Marker styles
+        const markerStyles = {
+            coasters: {
+                radius: 8,
+                color: '#0077ff',
+                fillColor: '#0077ff',
+                fillOpacity: 0.7
             }
-        ];
+        };
 
-        // Create LatLngBounds for auto zoom
-        const bounds = L.latLngBounds();
-
-        // Add hotspots to the map
-        hotspots.forEach(spot => {
-            const icon = L.icon({
-                iconUrl: spot.properties.icon,
-                iconSize: [40, 40],
-                popupAnchor: [0, -22]
-            });
-
-            const popupContent = `
-                <h3>${spot.name}</h3>
-                <p>${spot.properties.description}</p>
-                <p><b>Opening Date:</b> ${spot.properties.openingDate}</p>
-                ${spot.properties.phone ? `<p><b>Phone:</b> ${spot.properties.phone}</p>` : ''}
-                <p><b>Captain Coaster Ranking:</b> ${spot.properties.ranking}</p>
-            `;
-
-            const marker = L.marker(spot.properties.coordinates, { icon }).addTo(map);
-            marker.bindPopup(popupContent);
-
-            // Add hover effect
-            marker.on("mouseover", function () {
-                this.openPopup();
-            });
-            marker.on("mouseout", function () {
-                this.closePopup();
-            });
-
-            // Extend bounds for proper zoom
-            bounds.extend(spot.properties.coordinates);
-        });
-
-        // Fit bounds to markers
-        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
+        // Add coasters as a GeoJSON layer
+        const coastersLayer = L.geoJson(coasters, {
+            pointToLayer: (feature, latlng) => {
+                return L.circleMarker(latlng, markerStyles.coasters); // Custom circle marker
+            },
+            onEachFeature: (feature, layer) => {
+                layer.bindPopup(
+                    `<h3>${feature.properties.Name}</h3>
+                     <p>Park: ${feature.properties.Park}</p>
+                     <p>Location: ${feature.properties.Location}</p>
+                     <p>Year: ${feature.properties.Year}</p>
+                     <p>Supplier: ${feature.properties.Supplier}</p>`
+                );
+            }
+        }).addTo(map); // Add to map
     </script>
 </body>
 

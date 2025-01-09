@@ -20,14 +20,32 @@
             height: 600px;
             border: 1px solid #ccc;
             margin: 20px auto;
+            position: relative;
         }
 
-        .legend {
+        .legend,
+        .info-box {
             background: rgba(255, 255, 255, 0.8);
             padding: 10px;
             line-height: 1.5;
             font-size: 14px;
             font-weight: bold;
+            color: black;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.6),
+                0 0 20px rgba(255, 255, 255, 0.3);
+            z-index: 1000;
+            position: absolute;
+        }
+
+        .legend {
+            bottom: 20px;
+            right: 15px;
+        }
+
+        .info-box {
+            bottom: 20px;
+            left: 15px;
         }
 
         .legend span {
@@ -49,11 +67,40 @@
         .legend .school {
             background: #FFD700;
         }
+
+        .green-square {
+            width: 12px;
+            height: 12px;
+            background: #006400;
+            border: 1px solid white; /* Add thin white border */
+            transform: rotate(45deg); /* Rotate to make it a diamond */
+        }
+
+        .yellow-circle {
+            width: 12px;
+            height: 12px;
+            background: transparent; /* Transparent center */
+            border: 2px solid #FFD700;
+            border-radius: 50%;
+        }
     </style>
 </head>
 
 <body>
     <div id="map3"></div>
+    <div class="legend">
+        <div><span class="fire"></span> Fire Stations</div>
+        <div><span class="food"></span> Food Stores</div>
+        <div><span class="school"></span> After School Programs</div>
+    </div>
+    <div class="info-box">
+        <strong>How to Use This Map</strong>
+        <p>
+            - Fire station radius: 3 km<br>
+            - Click on the map to highlight data points within 1 km.<br>
+            - Hover over points to see the name of the place.
+        </p>
+    </div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="data/denver-fire-stations.js"></script>
     <script src="data/denver-food-stores.js"></script>
@@ -83,55 +130,61 @@
                 fillOpacity: 0.6
             },
             foodStores: {
-                radius: 8,
-                color: '#006400',
-                fillColor: '#006400',
-                fillOpacity: 0.8
+                icon: L.divIcon({
+                    className: 'green-square'
+                })
             },
             afterSchoolPrograms: {
-                radius: 10,
-                color: '#FFD700',
-                fillColor: '#FFD700',
-                fillOpacity: 0.8
+                icon: L.divIcon({
+                    className: 'yellow-circle'
+                })
             }
         };
 
-        // Create GeoJSON layers
+        // Add 3 km buffer around fire stations
+        const addBuffer = (latlng) => {
+            L.circle(latlng, {
+                radius: 3000,
+                color: '#ff4500',
+                weight: 1,
+                dashArray: '5, 5',
+                fillOpacity: 0
+            }).addTo(map);
+        };
+
+        // Add after-school programs first to place them in the background
+        const afterSchoolProgramsLayer = L.geoJson(programs, {
+            pointToLayer: (feature, latlng) => L.marker(latlng, {
+                icon: markerStyles.afterSchoolPrograms.icon
+            }),
+            onEachFeature: (feature, layer) => {
+                layer.bindTooltip(`Organization: ${feature.properties.ORGANIZATI}`);
+            }
+        }).addTo(map);
+
+        // Add fire stations and food stores in front
         const fireStationsLayer = L.geoJson(stations, {
-            pointToLayer: (feature, latlng) => L.circleMarker(latlng, markerStyles.fireStations),
+            pointToLayer: (feature, latlng) => {
+                addBuffer(latlng); // Add buffer around each fire station
+                return L.circleMarker(latlng, markerStyles.fireStations);
+            },
             onEachFeature: (feature, layer) => {
                 layer.bindTooltip(`Station Number: ${feature.properties.STATION_NU}`);
             }
         }).addTo(map);
 
         const foodStoresLayer = L.geoJson(stores, {
-            pointToLayer: (feature, latlng) => L.circleMarker(latlng, markerStyles.foodStores),
+            pointToLayer: (feature, latlng) => {
+                return L.marker(latlng, {
+                    icon: markerStyles.foodStores.icon
+                });
+            },
             onEachFeature: (feature, layer) => {
                 layer.bindTooltip(`Store Name: ${feature.properties.STORE_NAME}`);
             }
         }).addTo(map);
 
-        const afterSchoolProgramsLayer = L.geoJson(programs, {
-            pointToLayer: (feature, latlng) => L.circleMarker(latlng, markerStyles.afterSchoolPrograms),
-            onEachFeature: (feature, layer) => {
-                layer.bindTooltip(`Organization: ${feature.properties.ORGANIZATI}`);
-            }
-        }).addTo(map);
-
-        // Add a legend
-        const legend = L.control({ position: 'bottomright' });
-        legend.onAdd = function () {
-            const div = L.DomUtil.create('div', 'legend');
-            div.innerHTML = `
-                <div><span class="fire"></span> Fire Stations</div>
-                <div><span class="food"></span> Food Stores</div>
-                <div><span class="school"></span> After School Programs</div>
-            `;
-            return div;
-        };
-        legend.addTo(map);
-
-        // Click event for highlighting points within 1km
+        // Click event for highlighting points within 1 km
         let currentCircle = null;
         map.on('click', function (e) {
             const clickLocation = e.latlng;
@@ -148,19 +201,19 @@
                 fillOpacity: 0.3
             }).addTo(map);
 
-            function highlightNearby(layer, style) {
+            function highlightNearby(layer) {
                 layer.eachLayer(marker => {
                     const distance = clickLocation.distanceTo(marker.getLatLng());
-                    marker.setStyle({
-                        ...style,
-                        fillOpacity: distance <= 1000 ? 1 : 0.1
-                    });
+                    if (marker.setStyle) {
+                        marker.setStyle({
+                            fillOpacity: distance <= 1000 ? 1 : 0.1
+                        });
+                    }
                 });
             }
 
-            highlightNearby(fireStationsLayer, markerStyles.fireStations);
-            highlightNearby(foodStoresLayer, markerStyles.foodStores);
-            highlightNearby(afterSchoolProgramsLayer, markerStyles.afterSchoolPrograms);
+            highlightNearby(fireStationsLayer);
+            highlightNearby(afterSchoolProgramsLayer);
         });
     </script>
 </body>
