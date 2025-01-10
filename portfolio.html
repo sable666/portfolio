@@ -3,26 +3,52 @@
 
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+        rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Mapping Portfolio</title>
     <style>
-        /* General Styles */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Nunito', serif;
             margin: 0;
             padding: 0;
-            background-color: #ffe4e1; /* Light pink background */
-            color: #333; /* Dark text for readability */
+            background-color: #f5e5ba;
+            /* Muted earthy orange */
+            color: #2a3d5b;
+            /* Dark navy blue for contrast */
         }
 
+
+
+
         header {
-            background: #ff69b4; /* Hot pink */
+            background: url('./data/banner.jpg') no-repeat center center;
+            /* Correct path to the image */
+            background-size: cover;
+            /* Ensure the image covers the entire header */
             display: flex;
             align-items: center;
             padding: 20px;
             position: relative;
-            border-bottom: 2px solid #ff1493; /* Deep pink */
+            border-bottom: 4px solid #1a3420;
+            /* Darker forest green */
+            height: 200px;
+            /* Set a fixed height for the header */
         }
+
+        h1,
+        h2 {
+            font-weight: 800;
+            /* Bold for headers */
+        }
+
+        p {
+            font-weight: 400;
+            /* Regular for body text */
+        }
+
 
         #profile-pic-container {
             display: flex;
@@ -33,7 +59,8 @@
             width: 200px;
             height: 200px;
             border-radius: 50%;
-            border: 2px solid #ff1493; /* Deep pink */
+            border: 3px solid #1a3420;
+            /* Darker forest green */
             margin-right: 20px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
@@ -41,92 +68,164 @@
 
         #profile-pic:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 10px rgba(255, 20, 147, 0.8),
-                0 0 20px rgba(255, 20, 147, 0.6),
-                0 0 30px rgba(255, 20, 147, 0.4);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+                0 0 20px rgba(255, 255, 255, 0.6),
+                0 0 30px rgba(255, 255, 255, 0.4);
+            /* White glow */
         }
 
         #title-area {
             text-align: center;
             flex-grow: 1;
+            transform: translate(-30%, -75%);
+            /* Moves text 30% to the left and 75% upwards */
         }
+
+
+
 
         #title-area h1 {
             margin: 0;
-            font-size: 2em;
-            color: #fff; /* White text */
+            font-size: 2.5em;
+            color: #f8e8d4;
+            /* Soft beige text for contrast */
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+            /* Subtle shadow for better readability */
         }
 
         #title-area p {
             margin: 5px 0;
-            font-size: 1.2em;
-            color: #ffe4e1; /* Light pink for contrast */
+            font-size: 1.5em;
+            color: #9fa39f;
+            /* Slightly lighter green */
+        }
+
+        #intro-section {
+            background-color: #d4c18f;
+            /* Beige background for the intro section */
+            padding: 1px 0;
+            /* Reduced vertical padding */
+            text-align: center;
+            /* Center the content */
         }
 
         #intro-text {
+            font-size: 1.2em;
+            color: #000000;
+            margin: 0 auto;
+            padding: 0px 20px;
+            max-width: 75%;
+            /* Extend the text box to 75% of the page width */
             text-align: center;
-            margin: 20px 0;
-            font-size: 1.1em;
-            color: #ff1493; /* Deep pink text */
+            /* Center justify the text */
         }
 
         #tabs {
             display: flex;
             justify-content: center;
-            background: #ffb6c1; /* Light pink */
-            padding: 10px 0;
-            border-top: 2px solid #ff1493; /* Deep pink */
-            border-bottom: 2px solid #ff1493;
+            background: #2f4b3a;
+            /* Darker muted green for the tabs background */
+            padding: 4px 0;
+            border-top: 2px solid #243d2e;
+            /* Navy green for the top border */
+            border-bottom: 2px solid #1a2f24;
+            /* Even darker green for the bottom border */
         }
 
         #tabs button {
             flex: 1;
             padding: 10px;
             cursor: pointer;
-            background: #ffb6c1; /* Light pink */
-            border: 1px solid #ff1493; /* Deep pink */
-            color: #333;
+            background: #243d2e;
+            /* Navy green for buttons */
+            border: 1px solid #2f4b3a;
+            /* Muted green for the button border */
+            color: #f0f8f0;
+            /* Light text for contrast */
             font-size: 1em;
             outline: none;
             margin: 0 5px;
+            transition: background 0.3s, border-color 0.3s;
+            /* Smooth transition for hover and active effects */
+        }
+
+        #tabs button:hover {
+            background: #2f4b3a;
+            /* Slightly lighter muted green on hover */
+            border-color: #243d2e;
+            /* Navy green border on hover */
         }
 
         #tabs button.active {
-            background: #ff1493; /* Deep pink */
-            color: #fff; /* White text */
+            background: #1a2f24;
+            /* Very dark "navy green" for the active tab */
+            color: #f0f8f0;
+            /* Light text for contrast */
+            border: 2px solid #6d9b68;
+            /* Medium dark green for the active border */
+            box-shadow: 0 0 8px #c89f43 inset,
+                /* Inner glow with a more golden tone */
+                0 0 16px #c89f43,
+                /* Slightly narrower outer glow */
+                0 0 24px 8px #c89f43;
+            /* More focused spread at the edges */
+            font-weight: bold;
+            /* Slight emphasis for the active tab */
         }
+
+
 
         .iframe-container {
             display: none;
             height: 600px;
-            width: 100%;
-            border: none;
-            margin: 20px 0;
-            border: 2px solid #ff1493; /* Deep pink */
+            /* Original height */
+            width: 90%;
+            /* Current width retained */
+            border: 2px solid #000000;
+            /* Black border for the frame */
+            margin: 20px auto;
+            /* Reset vertical spacing */
+            box-sizing: border-box;
         }
 
         .iframe-container.active {
             display: block;
         }
 
+
+
+
+
         footer {
-            background: #ff69b4; /* Hot pink */
+            background: #2b4d2b;
+            /* Dark forest green */
             text-align: center;
             padding: 20px;
-            border-top: 2px solid #ff1493; /* Deep pink */
+            border-top: 4px solid #1a3420;
+            /* Darker forest green */
+            color: #f0f8f0;
+            /* Light text */
         }
 
         #about-me {
             margin: 40px auto;
             padding: 20px;
-            max-width: 800px;
-            border: 2px solid #ff1493; /* Deep pink */
-            background: #fff; /* White background for readability */
-            color: #333; /* Dark text for readability */
+            max-width: 85%;
+            /* Slightly narrower than the iframe */
+            border: 2px solid #1a3420;
+            /* Darker forest green */
+            background: #e3dccb;
+            /* Beige background */
+            color: #2a3d5b;
+            /* Dark navy blue text */
+            box-sizing: border-box;
+            /* Ensures padding and border are included in width */
         }
 
+
         a {
-            color: #ff1493; /* Deep pink */
+            color: #f0f8f0;
+            /* Light text */
             text-decoration: none;
         }
 
@@ -134,25 +233,35 @@
             text-decoration: underline;
         }
     </style>
+
 </head>
 
 <body>
     <header>
-        <a id="profile-pic-container" href="https://geography.as.uky.edu/users/sjau227" target="_blank">
-            <img id="profile-pic"
-                src="https://geography.as.uky.edu/sites/default/files/styles/large/public/pictures/Screenshot%202023-08-28%20170010.png?itok=5DtkD-Ix"
-                alt="Sable Augustyn">
-        </a>
+        <div id="profile-pic-container">
+            <a href="https://www.linkedin.com/in/sableaugustyn" target="_blank">
+                <img id="profile-pic"
+                    src="https://geography.as.uky.edu/sites/default/files/styles/large/public/pictures/Screenshot%202023-08-28%20170010.png?itok=5DtkD-Ix"
+                    alt="Sable Augustyn">
+            </a>
+        </div>
+
         <div id="title-area">
             <h1>Sable Augustyn</h1>
             <p>Web Mapping Portfolio</p>
         </div>
     </header>
 
-    <div id="intro-text">
-        <p>Welcome! Explore the tabs below to view some of my interactive mapping projects, showcasing my skills in GIS
-            and web mapping.</p>
+    <div id="intro-section">
+        <div id="intro-text">
+            <p>
+                Welcome to my web portfolio! I've been working in GIS, geospatial analysis, and web mapping,
+                specializing in tools like ArcGIS, QGIS, and Leaflet. Check out the tabs below or scroll further to read
+                more about me. Click my picture to be directed to my LinkedIn.
+            </p>
+        </div>
     </div>
+
 
     <div id="tabs">
         <button class="tab-button active" data-target="map1">US Power Plants</button>
@@ -169,15 +278,37 @@
 
     <section id="about-me">
         <h2>About Me</h2>
-        <p>A geographer and GIS analyst with a strong foundation in web mapping, geospatial analysis, and data
-            visualization...</p>
+        <p>
+            I am a geographer and GIS analyst with a strong foundation in web mapping, geospatial analysis, and data
+            visualization.
+            My work specializes in leveraging tools like ArcGIS, QGIS, and Leaflet to create engaging and informative
+            digital maps.
+            I hold a Master of Arts in Geography and a Graduate Certificate in Web Mapping from the University of
+            Kentucky, as well as
+            a Bachelor's degree in Geography with a minor in International Security and Conflict Resolution.
+        </p>
+        <p>
+            My professional experiences span urban forestry initiatives, park operations, and teaching assistance, where
+            I honed my
+            skills in spatial data management, environmental stewardship, and community engagement. I bring over 15
+            years of
+            leadership and customer-facing experience, which enhance my adaptability and problem-solving capabilities.
+        </p>
+        <p>
+            Passionate about the intersection of geography, technology, and community, I aim to apply geospatial
+            technologies to solve
+            complex challenges, such as enhancing urban environments and supporting sustainable land management. My
+            portfolio reflects
+            a commitment to creating impactful and innovative solutions in the geospatial field.
+        </p>
     </section>
 
     <footer>
-        <p>Created by Sable Augustyn</p>
-        <a href="resume.pdf" download>Download My Resume</a>
+        <p>Maps Authored by Sable Augustyn</p>
+        <a href="data/resume.pdf" target="_blank">View My Resume</a>
     </footer>
-
+    
+    
     <script>
         // Tab switching logic
         document.querySelectorAll('.tab-button').forEach(button => {
@@ -188,7 +319,8 @@
                 button.classList.add('active');
 
                 // Hide all iframes
-                document.querySelectorAll('.iframe-container').forEach(iframe => iframe.classList.remove('active'));
+                document.querySelectorAll('.iframe-container').forEach(iframe => iframe.classList
+                    .remove('active'));
                 // Show the corresponding iframe
                 const target = button.getAttribute('data-target');
                 document.getElementById(target).classList.add('active');

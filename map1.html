@@ -11,18 +11,90 @@
             width: 100%;
             height: 600px;
             border: 1px solid #ccc;
-            margin: auto;
+            margin: 20px auto;
+            position: relative;
         }
+
 
         .legend-item {
             font-family: Arial, sans-serif;
             font-size: 1em;
+            background-color: rgba(255, 255, 255, 0.075);
+            /* Light background with 50% transparency */
+            padding: 5px;
+            /* Optional: Add padding for better spacing */
+        }
+
+
+        .leaflet-control-layers {
+            background-color: rgba(255, 255, 255, 0.3);
+            /* White background with 30% transparency */
+            border-radius: 8px;
+            /* Optional: Rounded corners for better aesthetics */
+            padding: 5px;
+            /* Space inside the box */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            /* Subtle shadow for contrast */
+        }
+
+        .leaflet-popup-content-wrapper {
+            background-color: rgba(255, 255, 255, 0.3);
+            /* Transparent background */
+            color: #cec9c9;
+            /* Black text for readability */
+            border-radius: 8px;
+            /* Rounded corners for consistency */
+            padding: 10px;
+            /* Inner padding for spacing */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            /* Subtle shadow for contrast */
+        }
+
+        .leaflet-popup-tip {
+            background-color: rgba(255, 255, 255, 0.3);
+            /* Matches the popup box transparency */
+        }
+
+
+        #how-to-box {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 300px;
+            /* Adjust width as needed */
+            background-color: rgba(255, 255, 255, 0.3);
+            /* Transparent background */
+            color: #ded2d2;
+            /* Black text for readability */
+            font-family: Arial, sans-serif;
+            font-size: 1em;
+            border-radius: 8px;
+            /* Rounded corners */
+            padding: 10px;
+            /* Add spacing inside the box */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            /* Subtle shadow for contrast */
+            z-index: 1000;
+            /* Ensure it appears above the map */
         }
     </style>
 </head>
 
 <body>
     <div id="map1"></div>
+    <div id="how-to-box">
+        <h3>How to Use the Map</h3>
+        <p>
+            This map allows you to explore the energy sources of power plants across the United States.
+            Use the legend in the upper-right corner to toggle the visibility of power plants by type:
+            Hydro, Wind, Coal, or Solar.
+        </p>
+        <p>
+            Click anywhere on the map to analyze power generation within a 500km radius of your click.
+            A popup will display the total power capacity and detailed power usage by energy source for that area.
+        </p>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="data/power-plants.js"></script>
     <script>
@@ -83,11 +155,16 @@
 
             // Add legend
             const sourcesLayers = {
-                "<b class='legend-item' style='color:#1f78b4;'>Hydro</b>": geoJsonLayers.hydroLayer,
-                "<b class='legend-item' style='color:#33a02c;'>Wind</b>": geoJsonLayers.windLayer,
-                "<b class='legend-item' style='color:#ffff00;'>Solar</b>": geoJsonLayers.solarLayer,
-                "<b class='legend-item' style='color:#6a3d9a;'>Coal</b>": geoJsonLayers.coalLayer
+                "<b class='legend-item' style='color:#85b7e1;'>Hydro</b>": geoJsonLayers
+                    .hydroLayer, // Lighter blue for Hydro
+                "<b class='legend-item' style='color:#8ddf8b;'>Wind</b>": geoJsonLayers
+                    .windLayer, // Lighter green for Wind
+                "<b class='legend-item' style='color:#c4a6d6;'>Coal</b>": geoJsonLayers
+                    .coalLayer, // Lighter purple for Coal
+                "<b class='legend-item' style='color:#ffff99;'>Solar</b>": geoJsonLayers
+                    .solarLayer // Retain yellow for Solar
             };
+
 
             L.control.layers(null, sourcesLayers, {
                 collapsed: false
@@ -112,7 +189,7 @@
                 for (let layer in geoJsonLayers) {
                     geoJsonLayers[layer].eachLayer(marker => {
                         const distance = e.latlng.distanceTo(marker.getLatLng()) /
-                        1000; // Convert to km
+                            1000; // Convert to km
                         if (distance <= 500) {
                             marker.setStyle({
                                 stroke: true,
