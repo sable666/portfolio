@@ -23,6 +23,24 @@
             position: relative;
         }
 
+        #overlayMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3em;
+    font-weight: bold;
+    color: red;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px 40px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    pointer-events: none; /* So map is still interactive */
+    text-align: center;
+}
+
+
     </style>
 </head>
 
@@ -70,6 +88,9 @@
             }
         }).addTo(map); // Add to map
     </script>
+    <div id="overlayMessage">DONT LOOK AT ME, I'M NOT DONE</div>
+
+
 </body>
 
 </html>
